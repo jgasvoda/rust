@@ -1,8 +1,18 @@
 -include ../tools.mk
 
-ifeq ($(TARGET),x86_64-unknown-linux-gnu)
-all:
-	$(RUSTC) -Z sanitizer=leak --crate-type proc-macro --target $(TARGET) hello.rs 2>&1 | grep -q 'Only executables, dylibs and rlibs can be compiled with `-Z sanitizer`'
+# NOTE the address sanitizer only supports x86_64 linux and macOS
+
+ifeq ($(TARGET),x86_64-apple-darwin)
+ASAN_SUPPORT=$(SANITIZER_SUPPORT)
+EXTRA_RUSTFLAG=-C rpath
 else
+ifeq ($(TARGET),x86_64-unknown-linux-gnu)
+ASAN_SUPPORT=$(SANITIZER_SUPPORT)
+EXTRA_RUSTFLAG=
+endif
+endif
+
 all:
+ifeq ($(ASAN_SUPPORT),1)
+	$(RUSTC) -Z sanitizer=leak --crate-type proc-macro --target $(TARGET) hello.rs 2>&1 | grep -q 'Only executables, dylibs and rlibs can be compiled with `-Z sanitizer`'
 endif

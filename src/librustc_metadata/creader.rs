@@ -858,12 +858,12 @@ impl<'a> CrateLoader<'a> {
                 match *ct {
                     // Link the runtime
                     config::CrateTypeExecutable => true,
-                    config::CrateTypeDylib => true,
-                    config::CrateTypeCdylib => true,
-                    config::CrateTypeStaticlib => true,
                     // This crate will be compiled with the required
                     // instrumentation pass
                     config::CrateTypeRlib => false,
+                    config::CrateTypeDylib => false,
+                    config::CrateTypeCdylib => false,
+                    config::CrateTypeStaticlib => false,
                     _ => {
                         self.sess.err(&format!("Only executables, dylibs and rlibs can be \
                                                 compiled with `-Z sanitizer`"));
