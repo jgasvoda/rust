@@ -860,10 +860,11 @@ impl<'a> CrateLoader<'a> {
                     config::CrateTypeExecutable => true,
                     // This crate will be compiled with the required
                     // instrumentation pass
-                    config::CrateTypeRlib => false,
-                    config::CrateTypeDylib => false,
-                    config::CrateTypeCdylib => false,
-                    config::CrateTypeStaticlib => false,
+                    config::CrateTypeRlib |
+                    config::CrateTypeDylib |
+                    config::CrateTypeCdylib |
+                    config::CrateTypeStaticlib =>
+                        false,
                     _ => {
                         self.sess.err(&format!("Only executables, dylibs and rlibs can be \
                                                 compiled with `-Z sanitizer`"));
