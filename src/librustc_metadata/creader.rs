@@ -857,13 +857,13 @@ impl<'a> CrateLoader<'a> {
             if !self.sess.crate_types.borrow().iter().all(|ct| {
                 match *ct {
                     // Link the runtime
+                    config::CrateTypeStaticlib |
                     config::CrateTypeExecutable => true,
                     // This crate will be compiled with the required
                     // instrumentation pass
                     config::CrateTypeRlib |
                     config::CrateTypeDylib |
-                    config::CrateTypeCdylib |
-                    config::CrateTypeStaticlib =>
+                    config::CrateTypeCdylib =>
                         false,
                     _ => {
                         self.sess.err(&format!("Only executables, dylibs and rlibs can be \
@@ -892,7 +892,7 @@ impl<'a> CrateLoader<'a> {
                 info!("loading sanitizer: {}", name);
 
                 let symbol = Symbol::intern(name);
-                let dep_kind = DepKind::Implicit;
+                let dep_kind = DepKind::Explicit;
                 let (_, data) =
                     self.resolve_crate(&None, symbol, symbol, None, DUMMY_SP,
                                        PathKind::Crate, dep_kind);
@@ -902,6 +902,8 @@ impl<'a> CrateLoader<'a> {
                     self.sess.err(&format!("the crate `{}` is not a sanitizer runtime",
                                            name));
                 }
+            } else {
+                self.sess.err(&format!("Must link std to be compiled with `-Z sanitizer`"));
             }
         }
     }
